@@ -1,0 +1,96 @@
+ pipeline{
+              
+               agent any
+               /*
+               agent{
+               lable 'NodeName'
+                }
+               */
+              
+               tools{
+               maven'maven3.8.3'
+               }
+ 
+               options{
+               //It will add timestamp to the output
+               timestamp()
+               //Discard Old  Build....keep only last 5 Builds with artifacts
+               buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '5', daysToKeepStr: '', numToKeepStr: '5'))
+                }
+
+                 triggers{
+                 //Pllo SCM  
+                 pollSCM('* * * * *')
+                 //Build Periodically
+                 cron('* * * * *')
+                 //GitHub Webhook
+                 githubPush()
+                  }
+              
+                stages{
+                        
+                   //Getting the code from GitHub Repo
+                   stage('CheckoutCOde'){
+                   steps{
+                        git credentialsId: '6ba5a724-b64b-4c53-a968-eff14de491ee', url: 'https://github.com/gganeshgarganization/maven-web-application.git'          
+                       }
+                      }
+
+                      
+                    //After getting code doing build using maven
+                    stage('Build'){
+                    steps{
+                       sh "mvn clean package" 
+                      }
+                      }
+                      
+                     //Exicuting Sonarqube Report 
+                     stage('SonarqubeReport'){
+                     steps{
+                       sh "mvn sonar:sonar"
+                      }
+                      }
+                     
+                     //Uploading artifacats into Nexus Repo
+                     /*
+                     stage('UploadArtfactintoNexus'){
+                     steps{
+                       sh "mvn deploy"
+                      }
+                      }
+                     */
+                  
+                     stage('DeployAppintoTomcatServer'){
+                     steps{
+                        sshagent(['8fa4e688-4dcc-4323-bc8c-cfecdb2c3a0e']) {
+                       sh "scp -o StrictHostKeyChecking=no target/maven-web-application.war ec2-user@65.2.63.186:/opt/apache-tomcat-9.0.65/webapps/"
+                      }
+                      }
+                      }
+                   
+                     }//stages closing
+
+                   post{
+                     success{
+                       mail bcc: '', body: '''Build Over - Success.....
+
+                       Regards,
+                       Ganesh Software solutions
+                       9346424265''', cc: 'ganeshmuthyala71@gmail.com', from: '', replyTo: '', subject: 'Build over!.....', to: 'ganeshmuthyala71@gmail.com'   
+                       }
+
+                     failure{
+                        mail bcc: '', body: '''Build Over - Failure.....
+
+                        Regards,
+                        Ganesh Software solutions
+                        9346424265''', cc: 'ganeshmuthyala71@gmail.com', from: '', replyTo: '', subject: 'Build over!.....', to: 'ganeshmuthyala71@gmail.com'   
+
+                     }
+                      
+                     }
+                           
+                   
+
+                    }//Pipeline closing
+
