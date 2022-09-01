@@ -17,7 +17,9 @@
                //Discard Old  Build....keep only last 5 Builds with artifacts
                buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '5', daysToKeepStr: '', numToKeepStr: '5'))
                 }
-
+                 
+                 /*
+                 
                  triggers{
                  //Pllo SCM  
                  pollSCM('* * * * *')
@@ -27,6 +29,8 @@
                  githubPush()
                   }
               
+                 */
+                 
                 stages{
                         
                    //Getting the code from GitHub Repo
