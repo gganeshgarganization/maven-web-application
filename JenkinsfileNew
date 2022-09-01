@@ -74,29 +74,7 @@ pipeline{
                       
                       */                      
 
-                     }//stages closing
-
-                   post{
-                     success{
-                       mail bcc: '', body: '''Build Over - Success.....
-
-                       Regards,
-                       Ganesh Software solutions
-                       9346424265''', cc: 'ganeshmuthyala71@gmail.com', from: '', replyTo: '', subject: 'Build over!.....', to: 'ganeshmuthyala71@gmail.com'   
-                       }
-
-                     failure{
-                        mail bcc: '', body: '''Build Over - Failure.....
-
-                        Regards,
-                        Ganesh Software solutions
-                        9346424265''', cc: 'ganeshmuthyala71@gmail.com', from: '', replyTo: '', subject: 'Build over!.....', to: 'ganeshmuthyala71@gmail.com'   
-
-                     }
-                      
-                     }
-                           
-                   
+                     }//stages closing 
 
                     }//Pipeline closing
 
